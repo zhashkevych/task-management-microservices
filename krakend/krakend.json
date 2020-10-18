@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "extra_config": {
+    "github_com/devopsfaith/krakend-gologging": {
+      "level":  "DEBUG",
+      "prefix": "[KRAKEND]",
+      "syslog": false,
+      "stdout": true
+    }
+  },
+  "endpoints": [
+    {
+      "endpoint": "/users/sign-up",
+      "method": "POST",
+      "backend": [
+        {
+          "url_pattern": "/api/v1/sign-up",
+          "method": "POST",
+          "host": [
+            "http://users-service:8000/"
+          ]
+        }
+      ]
+    }
+  ]
+}

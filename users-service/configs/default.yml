@@ -1,0 +1,15 @@
+http:
+  port: "8000"
+  max_header_megabytes: 1
+  timeouts:
+    read: "10s"
+    write: "10s"
+
+logger:
+  level: 5
+
+service:
+  name: "users-service"
+
+password:
+  salt: "hhd&S^Ff32HSfB214knamsnflasfj@klfka!"
