@@ -6,10 +6,6 @@ import (
 	"net/http"
 )
 
-func (h *Handler) token(c *gin.Context) {
-
-}
-
 type signUpResponse struct {
 	Id int `json:"id"`
 }
@@ -17,19 +13,46 @@ type signUpResponse struct {
 func (h *Handler) signUp(c *gin.Context) {
 	var input domain.User
 	if err := c.BindJSON(&input); err != nil {
-		responseAndLogError(c, http.StatusBadRequest, "signUp", "invalid input body")
+		responseAndLogError(c, http.StatusBadRequest, "signUp", "invalid input body: "+err.Error())
 		return
 	}
 
 	id, err := h.userService.CreateUser(input)
 	if err != nil {
-		responseAndLogError(c, http.StatusBadRequest, "signUp", "invalid input body")
+		responseAndLogError(c, http.StatusInternalServerError, "signUp", err.Error())
 		return
 	}
 
 	c.JSON(http.StatusOK, signUpResponse{id})
 }
 
-func (h *Handler) profile(c *gin.Context) {
+type tokenInput struct {
+	Username string `json:"username" binding:"required,min=5,max=20"`
+	Password string `json:"password" binding:"required,min=8,max=30"`
+}
 
+type tokenResponse struct {
+	AccessToken domain.AccessToken `json:"access_token"`
+}
+
+func (h *Handler) token(c *gin.Context) {
+	var input tokenInput
+	if err := c.BindJSON(&input); err != nil {
+		responseAndLogError(c, http.StatusBadRequest, "token", "invalid input body: "+err.Error())
+		return
+	}
+
+	token, err := h.userService.GenerateToken(input.Username, input.Password)
+	if err != nil {
+		responseAndLogError(c, http.StatusInternalServerError, "token", err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, tokenResponse{token})
+}
+
+func (h *Handler) profile(c *gin.Context) {
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"header": c.GetHeader("Authorization"),
+	})
 }

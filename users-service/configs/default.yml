@@ -13,3 +13,6 @@ service:
 
 password:
   salt: "hhd&S^Ff32HSfB214knamsnflasfj@klfka!"
+
+token:
+  ttl: "12h"

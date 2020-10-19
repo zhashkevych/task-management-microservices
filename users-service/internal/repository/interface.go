@@ -4,6 +4,5 @@ import "github.com/zhashkevych/task-management-microservices/users-service/inter
 
 type UserRepository interface {
 	Insert(user domain.User) (int, error)
-	GetUser()
-	GetProfile()
+	Get(username, password string) (domain.User, error)
 }

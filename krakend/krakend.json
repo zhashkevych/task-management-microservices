@@ -1,8 +1,9 @@
 {
   "version": 2,
+  "port": 8080,
   "extra_config": {
     "github_com/devopsfaith/krakend-gologging": {
-      "level":  "DEBUG",
+      "level": "DEBUG",
       "prefix": "[KRAKEND]",
       "syslog": false,
       "stdout": true
@@ -10,7 +11,7 @@
   },
   "endpoints": [
     {
-      "endpoint": "/users/sign-up",
+      "endpoint": "/user/sign-up",
       "method": "POST",
       "backend": [
         {
@@ -21,6 +22,49 @@
           ]
         }
       ]
+    },
+    {
+      "endpoint": "/user/token",
+      "backend": [
+        {
+          "url_pattern": "/api/v1/token",
+          "host": [
+            "http://users-service:8000/"
+          ]
+        }
+      ],
+      "extra_config": {
+        "github.com/devopsfaith/krakend-jose/signer": {
+          "alg": "HS256",
+          "kid": "sim2",
+          "keys-to-sign": ["access_token"],
+          "jwk-url": "http://fake_api:8080/jwk/symmetric.json",
+          "disable_jwk_security": true
+        }
+      }
+    },
+    {
+      "endpoint": "/user/profile",
+      "headers_to_pass": [
+        "Authorization"
+      ],
+      "backend": [
+        {
+          "url_pattern": "/api/v1/profile",
+          "host": [
+            "http://users-service:8000/"
+          ]
+        }
+      ],
+      "extra_config": {
+        "github.com/devopsfaith/krakend-jose/validator": {
+          "alg": "HS256",
+          "audience": ["http://gateway:8080"],
+          "issuer": "http://users-service:8000",
+          "jwk-url": "http://fake_api:8080/jwk/symmetric.json",
+          "disable_jwk_security": true
+        }
+      }
     }
   ]
 }

@@ -18,6 +18,7 @@ type (
 	Config struct {
 		DB           DBConfig
 		HTTP         HTTPConfig
+		Token        Token
 		LoggerLevel  int
 		ServiceName  string
 		PasswordSalt string
@@ -37,6 +38,12 @@ type (
 		ReadTimeout        time.Duration
 		WriteTimeout       time.Duration
 		MaxHeaderMegabytes int
+	}
+
+	Token struct {
+		Audience string
+		Issuer   string
+		TTL      time.Duration
 	}
 )
 
@@ -67,6 +74,11 @@ func setConfig() Config {
 			Password: viper.GetString("pass"),
 			SSLMode:  viper.GetString("sslmode"),
 		},
+		Token: Token{
+			Audience: viper.GetString("aud"),
+			Issuer: viper.GetString("iss"),
+			TTL: viper.GetDuration("token.ttl"),
+		},
 	}
 }
 
@@ -77,10 +89,14 @@ func setUpViper() error {
 		return err
 	}
 
-	return parseEnvVariables()
+	if err := parseDbEnvVariables(); err != nil {
+		return err
+	}
+
+	return parseTokenEnvVariables()
 }
 
-func parseEnvVariables() error {
+func parseDbEnvVariables() error {
 	viper.SetEnvPrefix("db")
 	if err := viper.BindEnv("host"); err != nil {
 		return err
@@ -103,6 +119,15 @@ func parseEnvVariables() error {
 	}
 
 	return viper.BindEnv("sslmode")
+}
+
+func parseTokenEnvVariables() error {
+	viper.SetEnvPrefix("token")
+	if err := viper.BindEnv("aud"); err != nil {
+		return err
+	}
+
+	return viper.BindEnv("iss")
 }
 
 func parseConfigFile() error {

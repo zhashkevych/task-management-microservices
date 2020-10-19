@@ -5,6 +5,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/zhashkevych/task-management-microservices/users-service/internal/config"
 	"github.com/zhashkevych/task-management-microservices/users-service/internal/handlers"
+	"github.com/zhashkevych/task-management-microservices/users-service/internal/jwt"
 	"github.com/zhashkevych/task-management-microservices/users-service/internal/repository/postgres"
 	"github.com/zhashkevych/task-management-microservices/users-service/internal/server"
 	"github.com/zhashkevych/task-management-microservices/users-service/internal/service"
@@ -42,11 +43,15 @@ func main() {
 	}
 
 	usersRepository := postgres.NewUserRepository(db)
-	usersService := service.NewUserService(usersRepository, cfg.PasswordSalt)
+	jwtIssuer := jwt.NewIssuer(cfg)
+	usersService := service.NewUserService(service.UserServiceDeps{
+		Repo:   usersRepository,
+		Salt:   cfg.PasswordSalt,
+		Issuer: jwtIssuer,
+	})
 	handler := handlers.NewHandler(usersService)
 
 	srv := server.NewServer(cfg, handler.Init())
-
 	go func() {
 		if err := srv.Run(); err != nil {
 			logrus.Errorf("error occurred while running http server: %s\n", err.Error())

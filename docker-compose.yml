@@ -1,6 +1,16 @@
 version: '3.8'
 
 services:
+  gateway:
+    image: devopsfaith/krakend:1.2.0
+    volumes:
+      - ./krakend:/etc/krakend
+    ports:
+      - 8080:8080
+    depends_on:
+      - users-service
+      - fake_api
+
   users-service:
     build: ./users-service/.
     command: ./users-service
@@ -16,6 +26,8 @@ services:
       - DB_USER=postgres
       - DB_PASS=qwerty
       - DB_SSLMODE=disable
+      - TOKEN_AUD=http://gateway:8080
+      - TOKEN_ISS=http://users-service:8000
 
   db:
     restart: always
@@ -27,13 +39,9 @@ services:
     environment:
       - POSTGRES_PASSWORD=qwerty
 
-  gateway:
-    image: devopsfaith/krakend:1.2.0
+  fake_api:
+    image: jaxgeller/lwan
     volumes:
-      - ./krakend:/etc/krakend
+      - ./data:/lwan/wwwroot
     ports:
-      - "1234:1234"
-      - "8080:8080"
-      - "8090:8090"
-    depends_on:
-      - users-service
+      - 8002:8080

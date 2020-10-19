@@ -24,10 +24,9 @@ func (r *UserRepository) Insert(user domain.User) (int, error) {
 	return id, nil
 }
 
-func (r *UserRepository) GetUser() {
+func (r *UserRepository) Get(username, password string) (domain.User, error) {
+	var user domain.User
+	err := r.db.Get(&user, "SELECT * FROM users WHERE username=$1 AND password=$2", username, password)
 
-}
-
-func (r *UserRepository) GetProfile() {
-
+	return user, err
 }
