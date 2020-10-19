@@ -19,9 +19,6 @@ type (
 		ExpiresAt int64  `json:"exp"`
 		Claims
 	}
-
-	RefreshToken struct {
-	}
 )
 
 func NewAccessToken(claims Claims) AccessToken {
@@ -35,6 +32,7 @@ func NewAccessToken(claims Claims) AccessToken {
 
 func ParseClaims(token string) (Claims, error) {
 	t, err := jwt.ParseWithClaims(token, Claims{}, func(token *jwt.Token) (i interface{}, err error) {
+		//TODO check signing method by alg provided in JWK
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
