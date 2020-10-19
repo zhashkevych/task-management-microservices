@@ -16,7 +16,6 @@ func TestSetEncriptionKeyFromJWK(t *testing.T) {
 		t.Fatal(err)
 	}
 
-
 	if cfg.Encryption.Key != "secret_key_jwk" {
 		t.Fatalf("encription key was not set")
 	}

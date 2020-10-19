@@ -18,15 +18,17 @@ type (
 	}
 )
 
-func NewAccessToken(input TokenInput) AccessToken {
-	return AccessToken{
+func New(input TokenInput) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &AccessToken{
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: input.ExpiresAt,
 			Audience:  cfg.Audience,
 			Issuer:    cfg.Issuer,
 		},
 		UserId: input.UserId,
-	}
+	})
+
+	return token.SignedString([]byte(cfg.Encryption.Key))
 }
 
 func ParseToken(token string) (AccessToken, error) {

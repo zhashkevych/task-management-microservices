@@ -1,7 +1,6 @@
 package jwt
 
 import (
-	"encoding/json"
 	"testing"
 	"time"
 )
@@ -19,7 +18,7 @@ type tokenTest struct {
 var (
 	testTable = []tokenTest{
 		{"correct token",
-			"eyJhbGciOiJIUzI1NiIsImtpZCI6InNpbTIifQ.eyJhdWQiOiJodHRwOi8vZ2F0ZXdheTo4MDgwIiwiZXhwIjoxNjAzMTQyMjY1LCJpc3MiOiJodHRwOi8vdXNlcnMtc2VydmljZTo4MDAwIiwidXNlcl9pZCI6MX0.s1goU57bVF3ViPAPncsEtR1MogREtfHHIdOa28jKHoY",
+			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MDMxNDk0OTgsInVzZXJfaWQiOjF9.IfxQXrIZFeeQ9gHtkaRl9qoRJZhrMm3wtFDXvZdsu6s",
 			"secret",
 			1,
 		false},
@@ -31,15 +30,19 @@ var (
 	}
 )
 
-func TestNewAccessToken(t *testing.T) {
+func TestNew(t *testing.T) {
 	t.Run("generate token", func(t *testing.T) {
-		token := NewAccessToken(TokenInput{
+		cfg.Encryption.Key = "secret"
+
+		token, err := New(TokenInput{
 			ExpiresAt: time.Now().Add(12 * time.Hour).Unix(),
 			UserId: 1,
 		})
+		if err != nil {
+			t.Fatal(err)
+		}
 
-		str, _ := json.Marshal(token)
-		t.Log("token: ", string(str))
+		t.Log("token: ", token)
 	})
 }
 
@@ -49,8 +52,12 @@ func TestParseToken(t *testing.T) {
 			cfg.Encryption.Key = tt.secret
 
 			token, err := ParseToken(tt.token)
-			if err != nil && tt.shouldFail {
-				t.Skip("ok")
+			if err != nil {
+				if tt.shouldFail {
+					t.Skip("ok")
+				}
+
+				t.Error(err)
 			}
 
 			if token.UserId != tt.expectedUserId {
