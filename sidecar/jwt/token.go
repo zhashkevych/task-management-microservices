@@ -7,44 +7,45 @@ import (
 )
 
 type (
-	Claims struct {
+	AccessToken struct {
 		jwt.StandardClaims
 		UserId int `json:"user_id"`
 	}
 
-	AccessToken struct {
-		Audience  string `json:"aud"`
-		Issuer    string `json:"iss"`
-		Claims
+	TokenInput struct {
+		UserId    int
+		ExpiresAt int64
 	}
 )
 
-func NewAccessToken(claims Claims) AccessToken {
+func NewAccessToken(input TokenInput) AccessToken {
 	return AccessToken{
-		Audience:  cfg.Audience,
-		Issuer:    cfg.Issuer,
-		Claims:    claims,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: input.ExpiresAt,
+			Audience:  cfg.Audience,
+			Issuer:    cfg.Issuer,
+		},
+		UserId: input.UserId,
 	}
 }
 
-func ParseClaims(token string) (Claims, error) {
-	t, err := jwt.ParseWithClaims(token, Claims{}, func(token *jwt.Token) (i interface{}, err error) {
-		//TODO check signing method by alg provided in JWK
+func ParseToken(token string) (AccessToken, error) {
+	t, err := jwt.ParseWithClaims(token, &AccessToken{}, func(token *jwt.Token) (i interface{}, err error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
-		return cfg.Encryption.Key, nil
+		return []byte(cfg.Encryption.Key), nil
 	})
 
 	if err != nil {
-		return Claims{}, err
+		return AccessToken{}, err
 	}
 
-	claims, ok := t.Claims.(Claims)
+	parsed, ok := t.Claims.(*AccessToken)
 	if !ok {
-		return Claims{}, errors.New("failed to get claims from token")
+		return AccessToken{}, errors.New("token is of invalid type")
 	}
 
-	return claims, nil
+	return *parsed, nil
 }
