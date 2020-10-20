@@ -1,6 +1,7 @@
 package jwt
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
@@ -16,6 +17,8 @@ type key struct {
 	SecretKey string `json:"k"`
 }
 
+// SetEncriptionKeyFromJWK parses remote JWK File from url
+// And sets Key and KeyID values for private package-level config instance
 func SetEncriptionKeyFromJWK(url, keyId string) error {
 	keyData, err := parseJWKFile(url)
 	if err != nil {
@@ -37,15 +40,27 @@ func parseJWKFile(url string) ([]byte, error) {
 }
 
 func setConfigEncryption(data []byte, keyId string) error {
-	var keys keys
-	err := json.Unmarshal(data, &keys)
+	keys, err := parseKeys(data)
 	if err != nil {
 		return err
 	}
 
-	for _, k := range keys.Keys {
+	return setEncryptionConfigFromKeys(keys, keyId)
+}
+
+func parseKeys(jwkData []byte) (keys, error) {
+	var keys keys
+	err := json.Unmarshal(jwkData, &keys)
+	return keys, err
+}
+
+func setEncryptionConfigFromKeys(k keys, keyId string) error {
+	for _, k := range k.Keys {
 		if k.KeyID == keyId {
-			cfg.Encryption.Key = k.SecretKey
+			// github.com/dgrijalva/jwt-go lib does not encode secret to base64
+			// but KrakenD assumes that secret is encoded
+			// so we need to do that manually
+			cfg.Encryption.Key = base64.URLEncoding.EncodeToString([]byte(k.SecretKey))
 			cfg.Encryption.KeyId = keyId
 
 			return nil

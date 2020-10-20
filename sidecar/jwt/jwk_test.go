@@ -1,6 +1,7 @@
 package jwt
 
 import (
+	"encoding/base64"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -16,7 +17,7 @@ func TestSetEncriptionKeyFromJWK(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if cfg.Encryption.Key != "secret_key_jwk" {
+	if cfg.Encryption.Key != base64.URLEncoding.EncodeToString([]byte("secret_key_jwk")) {
 		t.Fatalf("encription key was not set")
 	}
 

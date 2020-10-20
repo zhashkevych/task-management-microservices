@@ -18,6 +18,9 @@ type (
 	}
 )
 
+// New generates access token
+// Using shared secret from JWK file and config data
+// IMPORTANT: SetConfig() and SetEncriptionKeyFromJWK() calls are required before executing this method
 func New(input TokenInput) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &AccessToken{
 		StandardClaims: jwt.StandardClaims{
@@ -33,6 +36,8 @@ func New(input TokenInput) (string, error) {
 	return token.SignedString([]byte(cfg.Encryption.Key))
 }
 
+// ParseToken extracts payload from access token
+// Previously generated with New()
 func ParseToken(token string) (AccessToken, error) {
 	t, err := jwt.ParseWithClaims(token, &AccessToken{}, func(token *jwt.Token) (i interface{}, err error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
