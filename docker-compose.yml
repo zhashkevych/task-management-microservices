@@ -19,6 +19,7 @@ services:
       - 8001:8000
     depends_on:
       - db
+      - fake_api
     environment:
       - DB_HOST=db
       - DB_PORT=5432
@@ -28,6 +29,7 @@ services:
       - DB_SSLMODE=disable
       - TOKEN_AUD=http://gateway:8080
       - TOKEN_ISS=http://users-service:8000
+      - PASSWORD_SALT=hhd&S^Ff32HSfB214knamsnflasfj@klfka!
 
   db:
     restart: always

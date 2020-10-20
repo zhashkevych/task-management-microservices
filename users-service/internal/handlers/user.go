@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/zhashkevych/task-management-microservices/sidecar/jwt"
 	"github.com/zhashkevych/task-management-microservices/users-service/internal/domain"
 	"net/http"
 )
@@ -32,7 +33,7 @@ type tokenInput struct {
 }
 
 type tokenResponse struct {
-	AccessToken domain.AccessToken `json:"access_token"`
+	AccessToken jwt.AccessToken `json:"access_token"`
 }
 
 func (h *Handler) token(c *gin.Context) {
@@ -52,7 +53,13 @@ func (h *Handler) token(c *gin.Context) {
 }
 
 func (h *Handler) profile(c *gin.Context) {
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"header": c.GetHeader("Authorization"),
-	})
+	userId, _ := c.Get(userIdCtx)
+
+	profile, err := h.userService.GetProfile(userId.(int))
+	if err != nil {
+		responseAndLogError(c, http.StatusInternalServerError, "profile", err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, profile)
 }

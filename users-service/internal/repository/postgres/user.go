@@ -26,7 +26,14 @@ func (r *UserRepository) Insert(user domain.User) (int, error) {
 
 func (r *UserRepository) Get(username, password string) (domain.User, error) {
 	var user domain.User
-	err := r.db.Get(&user, "SELECT * FROM users WHERE username=$1 AND password=$2", username, password)
+	err := r.db.Get(&user, "SELECT id, first_name, last_name, username  FROM users WHERE username=$1 AND password=$2", username, password)
+
+	return user, err
+}
+
+func (r *UserRepository) GetById(id int) (domain.User, error) {
+	var user domain.User
+	err := r.db.Get(&user, "SELECT id, first_name, last_name, username FROM users WHERE id=$1", id)
 
 	return user, err
 }

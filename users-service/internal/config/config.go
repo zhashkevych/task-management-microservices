@@ -44,8 +44,6 @@ type (
 		TTL      time.Duration
 		Audience string
 		Issuer   string
-		JwkUrl   string
-		JwkKeyId string
 	}
 )
 
@@ -98,8 +96,6 @@ func setConfig() Config {
 			TTL:      viper.GetDuration("token.ttl"),
 			Audience: viper.GetString("aud"),
 			Issuer:   viper.GetString("iss"),
-			JwkUrl:   viper.GetString("jwk_url"),
-			JwkKeyId: viper.GetString("jwk_key_id"),
 		},
 	}
 }
@@ -151,14 +147,6 @@ func parseDbEnvVariables() error {
 func parseTokenEnvVariables() error {
 	viper.SetEnvPrefix("token")
 	if err := viper.BindEnv("aud"); err != nil {
-		return err
-	}
-
-	if err := viper.BindEnv("jwk_url"); err != nil {
-		return err
-	}
-
-	if err := viper.BindEnv("jwk_key_id"); err != nil {
 		return err
 	}
 

@@ -37,6 +37,6 @@ func (h *Handler) initV1Routes(router *gin.Engine) {
 	{
 		v1.POST("/sign-up", h.signUp)
 		v1.GET("/token", h.token)
-		v1.GET("/profile", h.profile)
+		v1.GET("/profile", userIdentity, h.profile)
 	}
 }

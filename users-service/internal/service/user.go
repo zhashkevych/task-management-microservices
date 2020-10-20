@@ -3,29 +3,29 @@ package service
 import (
 	"crypto/sha1"
 	"fmt"
+	"github.com/zhashkevych/task-management-microservices/sidecar/jwt"
 	"github.com/zhashkevych/task-management-microservices/users-service/internal/domain"
-	"github.com/zhashkevych/task-management-microservices/users-service/internal/jwt"
 	"github.com/zhashkevych/task-management-microservices/users-service/internal/repository"
-	"strconv"
+	"time"
 )
 
 type UserServiceDeps struct {
-	Repo   repository.UserRepository
-	Issuer *jwt.Issuer
-	Salt   string
+	Repo     repository.UserRepository
+	Salt     string
+	TokenTtl time.Duration
 }
 
 type UserService struct {
-	repo   repository.UserRepository
-	issuer *jwt.Issuer
-	salt   string
+	repo     repository.UserRepository
+	salt     string
+	tokenTtl time.Duration
 }
 
 func NewUserService(deps UserServiceDeps) *UserService {
 	return &UserService{
-		repo:   deps.Repo,
-		salt:   deps.Salt,
-		issuer: deps.Issuer,
+		repo:     deps.Repo,
+		salt:     deps.Salt,
+		tokenTtl: deps.TokenTtl,
 	}
 }
 
@@ -35,16 +35,20 @@ func (s *UserService) CreateUser(user domain.User) (int, error) {
 	return s.repo.Insert(user)
 }
 
-func (s *UserService) GenerateToken(username, password string) (domain.AccessToken, error) {
+func (s *UserService) GenerateToken(username, password string) (jwt.AccessToken, error) {
 	user, err := s.repo.Get(username, s.getPasswordHash(password))
 	if err != nil {
-		return domain.AccessToken{}, err
+		return jwt.AccessToken{}, err
 	}
 
-	//TODO implement refresh tokens + jti
+	return jwt.New(jwt.TokenInput{
+		UserId:    user.Id,
+		ExpiresAt: time.Now().Add(s.tokenTtl).Unix(),
+	}), nil
+}
 
-	accessToken := s.issuer.Issue(parseId(user.Id))
-	return accessToken, nil
+func (s *UserService) GetProfile(userId int) (domain.User, error) {
+	return s.repo.GetById(userId)
 }
 
 func (s *UserService) getPasswordHash(password string) string {
@@ -52,8 +56,4 @@ func (s *UserService) getPasswordHash(password string) string {
 	hash.Write([]byte(s.salt))
 
 	return fmt.Sprintf("%x", sha1.Sum([]byte(password)))
-}
-
-func parseId(id int) string {
-	return strconv.Itoa(id)
 }
