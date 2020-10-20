@@ -70,7 +70,7 @@ func main() {
 
 	<-quit
 
-	logrus.Print("TodoApp Shutting Down")
+	logrus.Infof("%s is shutting down", cfg.ServiceName)
 
 	if err := srv.Stop(context.Background()); err != nil {
 		logrus.Errorf("error occured on server shutting down: %s", err.Error())
