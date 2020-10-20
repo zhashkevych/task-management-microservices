@@ -18,10 +18,10 @@ type (
 	Config struct {
 		DB           DBConfig
 		HTTP         HTTPConfig
-		Token        Token
 		LoggerLevel  int
 		ServiceName  string
 		PasswordSalt string
+		Token        Token
 	}
 
 	DBConfig struct {
@@ -41,9 +41,11 @@ type (
 	}
 
 	Token struct {
+		TTL      time.Duration
 		Audience string
 		Issuer   string
-		TTL      time.Duration
+		JwkUrl   string
+		JwkKeyId string
 	}
 )
 
@@ -53,6 +55,24 @@ func Init() (Config, error) {
 	}
 
 	return setConfig(), nil
+}
+
+func setUpViper() error {
+	populateDefaults()
+
+	if err := parseConfigFile(); err != nil {
+		return err
+	}
+
+	if err := parseDbEnvVariables(); err != nil {
+		return err
+	}
+
+	if err := parsePasswordEnvVariables(); err != nil {
+		return err
+	}
+
+	return parseTokenEnvVariables()
 }
 
 func setConfig() Config {
@@ -75,25 +95,32 @@ func setConfig() Config {
 			SSLMode:  viper.GetString("sslmode"),
 		},
 		Token: Token{
+			TTL:      viper.GetDuration("token.ttl"),
 			Audience: viper.GetString("aud"),
-			Issuer: viper.GetString("iss"),
-			TTL: viper.GetDuration("token.ttl"),
+			Issuer:   viper.GetString("iss"),
+			JwkUrl:   viper.GetString("jwk_url"),
+			JwkKeyId: viper.GetString("jwk_key_id"),
 		},
 	}
 }
 
-func setUpViper() error {
-	populateDefaults()
+func parseConfigFile() error {
+	viper.AddConfigPath("configs")
+	viper.SetConfigName("default")
+	return viper.ReadInConfig()
+}
 
-	if err := parseConfigFile(); err != nil {
-		return err
-	}
+func populateDefaults() {
+	viper.SetDefault("http.port", defaultHttpPort)
+	viper.SetDefault("http.max_header_megabytes", defaultHttpMaxHeaderMegabytes)
+	viper.SetDefault("http.timeouts.read", defaultHttpRWTimeout)
+	viper.SetDefault("http.timeouts.write", defaultHttpRWTimeout)
 
-	if err := parseDbEnvVariables(); err != nil {
-		return err
-	}
+	viper.SetDefault("service.name", defaultServiceName)
 
-	return parseTokenEnvVariables()
+	viper.SetDefault("logger.level", defaultLoggerLevel)
+
+	viper.SetDefault("db.sslmode", defaultDbSSLMode)
 }
 
 func parseDbEnvVariables() error {
@@ -127,24 +154,18 @@ func parseTokenEnvVariables() error {
 		return err
 	}
 
+	if err := viper.BindEnv("jwk_url"); err != nil {
+		return err
+	}
+
+	if err := viper.BindEnv("jwk_key_id"); err != nil {
+		return err
+	}
+
 	return viper.BindEnv("iss")
 }
 
-func parseConfigFile() error {
-	viper.AddConfigPath("configs")
-	viper.SetConfigName("default")
-	return viper.ReadInConfig()
-}
-
-func populateDefaults() {
-	viper.SetDefault("http.port", defaultHttpPort)
-	viper.SetDefault("http.max_header_megabytes", defaultHttpMaxHeaderMegabytes)
-	viper.SetDefault("http.timeouts.read", defaultHttpRWTimeout)
-	viper.SetDefault("http.timeouts.write", defaultHttpRWTimeout)
-
-	viper.SetDefault("service.name", defaultServiceName)
-
-	viper.SetDefault("logger.level", defaultLoggerLevel)
-
-	viper.SetDefault("db.sslmode", defaultDbSSLMode)
+func parsePasswordEnvVariables() error {
+	viper.SetEnvPrefix("password")
+	return viper.BindEnv("salt")
 }

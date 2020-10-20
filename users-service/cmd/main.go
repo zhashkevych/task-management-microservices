@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"github.com/sirupsen/logrus"
+	"github.com/zhashkevych/task-management-microservices/sidecar/jwt"
 	"github.com/zhashkevych/task-management-microservices/users-service/internal/config"
 	"github.com/zhashkevych/task-management-microservices/users-service/internal/handlers"
-	"github.com/zhashkevych/task-management-microservices/users-service/internal/jwt"
 	"github.com/zhashkevych/task-management-microservices/users-service/internal/repository/postgres"
 	"github.com/zhashkevych/task-management-microservices/users-service/internal/server"
 	"github.com/zhashkevych/task-management-microservices/users-service/internal/service"
@@ -42,12 +42,16 @@ func main() {
 		logrus.Fatalf("failed to initialize db: %s", err.Error())
 	}
 
+	err = initJWT(cfg)
+	if err != nil {
+		logrus.Fatalf("failed to initialize JWT package: %s", err.Error())
+	}
+
 	usersRepository := postgres.NewUserRepository(db)
-	jwtIssuer := jwt.NewIssuer(cfg)
 	usersService := service.NewUserService(service.UserServiceDeps{
-		Repo:   usersRepository,
-		Salt:   cfg.PasswordSalt,
-		Issuer: jwtIssuer,
+		Repo:     usersRepository,
+		Salt:     cfg.PasswordSalt,
+		TokenTtl: cfg.Token.TTL,
 	})
 	handler := handlers.NewHandler(usersService)
 
@@ -75,4 +79,13 @@ func main() {
 	if err := db.Close(); err != nil {
 		logrus.Errorf("error occured on db connection close: %s", err.Error())
 	}
+}
+
+func initJWT(cfg config.Config) error {
+	jwt.SetConfig(jwt.Config{
+		Audience: cfg.Token.Audience,
+		Issuer:   cfg.Token.Issuer,
+	})
+
+	return jwt.SetEncriptionKeyFromJWK(cfg.Token.JwkUrl, cfg.Token.JwkKeyId)
 }
