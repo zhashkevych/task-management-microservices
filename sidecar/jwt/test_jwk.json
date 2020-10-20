@@ -2,14 +2,8 @@
   "keys": [
     {
       "kty": "oct",
-      "alg": "A128KW",
-      "k": "qwe",
-      "kid": "sim1"
-    },
-    {
-      "kty": "oct",
       "k": "secret_key_jwk",
-      "kid": "sim2",
+      "kid": "1",
       "alg": "HS256"
     }
   ]

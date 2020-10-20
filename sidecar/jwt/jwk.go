@@ -46,6 +46,8 @@ func setConfigEncryption(data []byte, keyId string) error {
 	for _, k := range keys.Keys {
 		if k.KeyID == keyId {
 			cfg.Encryption.Key = k.SecretKey
+			cfg.Encryption.KeyId = keyId
+
 			return nil
 		}
 	}

@@ -9,7 +9,7 @@ import (
 type (
 	AccessToken struct {
 		jwt.StandardClaims
-		UserId int `json:"user_id"`
+		UserId int    `json:"user_id"`
 	}
 
 	TokenInput struct {
@@ -27,6 +27,8 @@ func New(input TokenInput) (string, error) {
 		},
 		UserId: input.UserId,
 	})
+
+	token.Header["kid"] = cfg.Encryption.KeyId
 
 	return token.SignedString([]byte(cfg.Encryption.Key))
 }

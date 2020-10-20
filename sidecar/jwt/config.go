@@ -9,6 +9,7 @@ type Config struct {
 type Encryption struct {
 	Algorithm string `json:"alg"`
 	Key       string `json:"k"`
+	KeyId     string `json:"kid"`
 }
 
 var cfg Config
