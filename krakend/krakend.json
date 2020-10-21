@@ -51,9 +51,10 @@
       "backend": [
         {
           "url_pattern": "/api/v1/profile",
-          "host": [
-            "http://users-service:8000/"
-          ]
+          "host": ["http://users-service:8000/"],
+          "extra_config": {
+            "github.com/devopsfaith/krakend-httpcache": {}
+          }
         }
       ],
       "extra_config": {

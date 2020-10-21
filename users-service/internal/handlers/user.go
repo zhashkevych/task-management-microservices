@@ -61,5 +61,6 @@ func (h *Handler) profile(c *gin.Context) {
 		return
 	}
 
+	setCacheHeader(c, 3600)
 	c.JSON(http.StatusOK, profile)
 }
