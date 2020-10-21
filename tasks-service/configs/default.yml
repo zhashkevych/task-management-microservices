@@ -1,0 +1,12 @@
+http:
+  port: "8000"
+  max_header_megabytes: 1
+  timeouts:
+    read: "10s"
+    write: "10s"
+
+logger:
+  level: 5
+
+service:
+  name: "tasks-service"
