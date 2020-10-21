@@ -38,7 +38,7 @@
           "alg": "HS256",
           "kid": "1",
           "keys-to-sign": ["access_token"],
-          "jwk-url": "http://fake_api:8080/jwk/symmetric.json",
+          "jwk-url": "http://file_server:8080/jwk/symmetric.json",
           "disable_jwk_security": true
         }
       }
@@ -61,7 +61,72 @@
           "alg": "HS256",
           "audience": ["http://gateway:8080"],
           "issuer": "http://users-service:8000",
-          "jwk-url": "http://fake_api:8080/jwk/symmetric.json",
+          "jwk-url": "http://file_server:8080/jwk/symmetric.json",
+          "disable_jwk_security": true
+        }
+      }
+    },
+    {
+      "endpoint": "/tasks",
+      "method": "POST",
+      "headers_to_pass": [
+        "Authorization"
+      ],
+      "backend": [
+        {
+          "url_pattern": "/api/v1/tasks",
+          "method": "POST",
+          "host": [
+            "http://tasks-service:8000/"
+          ]
+        }
+      ],
+      "extra_config": {
+        "github.com/devopsfaith/krakend-jose/validator": {
+          "alg": "HS256",
+          "audience": ["http://gateway:8080"],
+          "issuer": "http://users-service:8000",
+          "jwk-url": "http://file_server:8080/jwk/symmetric.json",
+          "disable_jwk_security": true
+        }
+      }
+    },
+    {
+      "endpoint": "/tasks",
+      "backend": [
+        {
+          "url_pattern": "/api/v1/tasks",
+          "host": [
+            "http://tasks-service:8000/"
+          ]
+        }
+      ],
+      "extra_config": {
+        "github.com/devopsfaith/krakend-jose/validator": {
+          "alg": "HS256",
+          "audience": ["http://gateway:8080"],
+          "issuer": "http://users-service:8000",
+          "jwk-url": "http://file_server:8080/jwk/symmetric.json",
+          "disable_jwk_security": true
+        }
+      }
+    },
+    {
+      "endpoint": "/tasks/{id}",
+      "backend": [
+        {
+          "url_pattern": "/api/v1/task/{id}",
+          "host": [
+            "http://tasks-service:8000/"
+          ]
+        }
+      ],
+      "extra_config": {
+        "github.com/devopsfaith/krakend-jose/validator": {
+          "alg": "HS256",
+          "audience": ["http://gateway:8080"],
+          "issuer": "http://users-service:8000",
+          "jwk-url": "http://file_server:8080/jwk/symmetric.json",
           "disable_jwk_security": true
         }
       }
