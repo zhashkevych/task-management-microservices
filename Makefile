@@ -1,4 +1,8 @@
+.SILENT:
 .PHONY: run migrate-users migrate-tasks-drop migrate-tasks migrate-tasks-drop
+
+help:
+	bash ./help.sh
 
 run:
 	docker-compose up --remove-orphans --build
