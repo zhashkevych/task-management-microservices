@@ -3,6 +3,7 @@ module github.com/zhashkevych/task-management-microservices/users-service
 go 1.15
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0 // indirect
 	github.com/dvsekhvalnov/jose2go v0.0.0-20201001154944-b09cfaf05951 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/gin-gonic/gin v1.6.3
@@ -22,6 +23,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.7.1
 	github.com/ugorji/go v1.1.12 // indirect
+	github.com/zhashkevych/go-sqlxmock v1.5.1-0.20201022085645-1bfbf460e053
 	github.com/zhashkevych/task-management-microservices/sidecar/jwt v0.0.0-20201020105755-63c7ea81b245 // indirect
 	golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897 // indirect
 	golang.org/x/sys v0.0.0-20201018230417-eeed37f84f13 // indirect
