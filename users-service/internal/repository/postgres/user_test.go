@@ -38,7 +38,6 @@ func TestUserRepository_Insert(t *testing.T) {
 				Password:  "password",
 			},
 			mock: func() {
-				//We added one row
 				rows := sqlxmock.NewRows([]string{"id"}).AddRow(1)
 				mock.ExpectQuery("INSERT INTO users").WithArgs("first_name", "last_name", "username", "password").WillReturnRows(rows)
 			},
@@ -66,10 +65,11 @@ func TestUserRepository_Insert(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.mock()
 			got, err := tt.s.Insert(tt.user)
-			if (err != nil) != tt.wantErr {
+			if err != nil && !tt.wantErr {
 				t.Errorf("Get() error new = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
+
 			if err == nil && got != tt.want {
 				t.Errorf("Get() = %v, want %v", got, tt.want)
 			}
@@ -132,7 +132,7 @@ func TestUserRepository_Get(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.mock()
 			got, err := tt.s.Get(tt.creds.username, tt.creds.password)
-			if (err != nil) != tt.wantErr {
+			if err != nil && !tt.wantErr {
 				t.Errorf("Get() error new = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
@@ -169,7 +169,7 @@ func TestUserRepository_GetById(t *testing.T) {
 			id:   1,
 			mock: func() {
 				rows := sqlxmock.NewRows([]string{"id", "first_name", "last_name", "username"}).AddRow(1, "test name", "test last name", "test")
-				mock.ExpectQuery("SELECT (.+) FROM users").WillReturnRows(rows)
+				mock.ExpectQuery("SELECT (.+) FROM users WHERE id=?").WithArgs(1).WillReturnRows(rows)
 			},
 			want: domain.User{
 				Id:        1,
@@ -183,7 +183,7 @@ func TestUserRepository_GetById(t *testing.T) {
 			s:    s,
 			id:   404,
 			mock: func() {
-				mock.ExpectQuery("SELECT (.+) FROM users").WillReturnError(sql.ErrNoRows)
+				mock.ExpectQuery("SELECT (.+) FROM users WHERE id=?").WithArgs(1).WillReturnError(sql.ErrNoRows)
 			},
 			wantErr: true,
 		},
@@ -194,7 +194,7 @@ func TestUserRepository_GetById(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.mock()
 			got, err := tt.s.GetById(tt.id)
-			if (err != nil) != tt.wantErr {
+			if err != nil && !tt.wantErr {
 				t.Errorf("Get() error new = %v, wantErr %v", err, tt.wantErr)
 				return
 			}

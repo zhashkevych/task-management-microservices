@@ -136,6 +136,7 @@ github.com/jtolds/gls v4.20.0+incompatible/go.mod h1:QJZ7F/aHp+rZTRtaJ1ow/lLfFfV
 github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7VTCxuUUipMqKk8s4w=
 github.com/kisielk/errcheck v1.1.0/go.mod h1:EZBBE59ingxPouuu3KfxchcWSUPOHkagtvWXihfKN4Q=
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
+github.com/kisielk/sqlstruct v0.0.0-20150923205031-648daed35d49/go.mod h1:yyMNCyc/Ib3bDTKd379tNMpB/7/H5TjM2Y9QJ5THLbE=
 github.com/konsorten/go-windows-terminal-sequences v1.0.1/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
 github.com/kr/fs v0.1.0/go.mod h1:FFnZGqtBN9Gxj7eW1uZ42v5BccTP0vu6NEaFoC2HwRg=
 github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515/go.mod h1:+0opPa2QZZtGFBFZlji/RkVcI2GknAs/DXo4wKdlNEc=
@@ -248,6 +249,8 @@ github.com/ugorji/go/codec v1.1.13 h1:013LbFhocBoIqgHeIHKlV4JWYhqogATYWZhIcH0WHn
 github.com/ugorji/go/codec v1.1.13/go.mod h1:oNVt3Dq+FO91WNQ/9JnHKQP2QJxTzoN7wCBFCq1OeuU=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
+github.com/zhashkevych/go-sqlxmock v1.5.2-0.20201023121933-f973d0041cfc h1:z6oWvrg2brc98tlcDChukX4BKc3t0Ayz9dSBtJRYw9w=
+github.com/zhashkevych/go-sqlxmock v1.5.2-0.20201023121933-f973d0041cfc/go.mod h1:kgQytrOB1XCQEsf5P1GpvvmjRkJhrORDtR/jvxKEQBw=
 github.com/zhashkevych/task-management-microservices v0.0.0-20201020105755-63c7ea81b245 h1:dniAp6YXN7HLUKSTEtcHieuhDmBu2/m1o3mM5gNgH8A=
 github.com/zhashkevych/task-management-microservices/sidecar/jwt v0.0.0-20201020105755-63c7ea81b245 h1:+51k0dkYMfrRbkpd6VNZbnHodwRFhkbEvw93HXmovAc=
 github.com/zhashkevych/task-management-microservices/sidecar/jwt v0.0.0-20201020105755-63c7ea81b245/go.mod h1:1LYUBkz2ZM8CPQJSBVcXhDMzGVeCul3ycxmPWShfPOE=

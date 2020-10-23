@@ -7,6 +7,10 @@ help:
 run:
 	docker-compose up --remove-orphans --build
 
+test:
+	cd users-service && go test -v ./...
+	cd tasks-service && go test -v ./...
+
 migrate-users:
 	migrate -path ./users-service/schema -database 'postgres://postgres:qwerty@0.0.0.0:5433/users?sslmode=disable' up
 
