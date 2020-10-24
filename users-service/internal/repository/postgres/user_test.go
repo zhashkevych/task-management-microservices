@@ -2,7 +2,7 @@ package postgres
 
 import (
 	"database/sql"
-	sqlxmock "github.com/zhashkevych/go-sqlxmock"
+	"github.com/zhashkevych/go-sqlxmock"
 	"github.com/zhashkevych/task-management-microservices/users-service/internal/domain"
 	"github.com/zhashkevych/task-management-microservices/users-service/internal/repository"
 	"reflect"
@@ -11,7 +11,7 @@ import (
 
 func TestUserRepository_Insert(t *testing.T) {
 	// Init DB and Repo
-	db, mock, err := sqlxmock.Newx()
+	db, mock, err := sqlmock.Newx()
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -38,7 +38,7 @@ func TestUserRepository_Insert(t *testing.T) {
 				Password:  "password",
 			},
 			mock: func() {
-				rows := sqlxmock.NewRows([]string{"id"}).AddRow(1)
+				rows := sqlmock.NewRows([]string{"id"}).AddRow(1)
 				mock.ExpectQuery("INSERT INTO users").WithArgs("first_name", "last_name", "username", "password").WillReturnRows(rows)
 			},
 			want: 1,
@@ -53,7 +53,7 @@ func TestUserRepository_Insert(t *testing.T) {
 				Password:  "password",
 			},
 			mock: func() {
-				rows := sqlxmock.NewRows([]string{"id"})
+				rows := sqlmock.NewRows([]string{"id"})
 				mock.ExpectQuery("INSERT INTO users").WithArgs("first_name", "last_name", "username", "password").WillReturnRows(rows)
 			},
 			wantErr: true,
@@ -79,7 +79,7 @@ func TestUserRepository_Insert(t *testing.T) {
 
 func TestUserRepository_Get(t *testing.T) {
 	// Init DB and Repo
-	db, mock, err := sqlxmock.Newx()
+	db, mock, err := sqlmock.Newx()
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -106,7 +106,7 @@ func TestUserRepository_Get(t *testing.T) {
 			s:     s,
 			creds: credentials{"test", "qwerty"},
 			mock: func() {
-				rows := sqlxmock.NewRows([]string{"id", "first_name", "last_name", "username"}).AddRow(1, "test name", "test last name", "test")
+				rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "username"}).AddRow(1, "test name", "test last name", "test")
 				mock.ExpectQuery("SELECT (.+) FROM users").WillReturnRows(rows)
 			},
 			want: domain.User{
@@ -146,7 +146,7 @@ func TestUserRepository_Get(t *testing.T) {
 
 func TestUserRepository_GetById(t *testing.T) {
 	// Init DB and Repo
-	db, mock, err := sqlxmock.Newx()
+	db, mock, err := sqlmock.Newx()
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -168,7 +168,7 @@ func TestUserRepository_GetById(t *testing.T) {
 			s:    s,
 			id:   1,
 			mock: func() {
-				rows := sqlxmock.NewRows([]string{"id", "first_name", "last_name", "username"}).AddRow(1, "test name", "test last name", "test")
+				rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "username"}).AddRow(1, "test name", "test last name", "test")
 				mock.ExpectQuery("SELECT (.+) FROM users WHERE id=?").WithArgs(1).WillReturnRows(rows)
 			},
 			want: domain.User{

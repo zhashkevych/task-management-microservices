@@ -74,5 +74,4 @@ func TestUserService_GenerateToken(t *testing.T) {
 			}
 		})
 	}
-
 }
