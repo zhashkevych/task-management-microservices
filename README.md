@@ -15,6 +15,10 @@
 - `make run` to build & run project
 - `make migrate-users` & `make migrate-tasks` to apply database migrations
 
+## Build & Run Project
+- Run `make run` in terminal window
+- **If you are running project locally for the first time,** open new window and run `make migrate-users && make migrate-tasks`
+
 ## TODO
 - Inter Process Communication (gRPC / Message Queue)
 - Logging & Tracing
