@@ -13,16 +13,16 @@ func TestTaskRepository_Insert(t *testing.T) {
 	// Init DB and Repo
 	db, mock, err := sqlmock.Newx()
 	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+		t.Fatalf("an error '%repo' was not expected when opening a stub database connection", err)
 	}
 	defer db.Close()
 
-	s := NewTaskRepository(db)
+	repo := NewTaskRepository(db)
 
 	// Create Test Table
 	tests := []struct {
 		name    string
-		s       repository.TaskRepository
+		repo    repository.TaskRepository
 		task    domain.Task
 		mock    func()
 		want    int
@@ -30,7 +30,7 @@ func TestTaskRepository_Insert(t *testing.T) {
 	}{
 		{
 			name: "OK",
-			s:    s,
+			repo: repo,
 			task: domain.Task{
 				Title:  "test",
 				UserId: 1,
@@ -44,7 +44,7 @@ func TestTaskRepository_Insert(t *testing.T) {
 		},
 		{
 			name: "Empty Fields",
-			s:    s,
+			repo: repo,
 			task: domain.Task{},
 			mock: func() {
 				rows := sqlmock.NewRows([]string{"id"})
@@ -58,7 +58,7 @@ func TestTaskRepository_Insert(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.mock()
-			got, err := tt.s.Insert(tt.task)
+			got, err := tt.repo.Insert(tt.task)
 			if err != nil && !tt.wantErr {
 				t.Errorf("Get() error new = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -74,25 +74,25 @@ func TestTaskRepository_GetAll(t *testing.T) {
 	// Init DB and Repo
 	db, mock, err := sqlmock.Newx()
 	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+		t.Fatalf("an error '%repo' was not expected when opening a stub database connection", err)
 	}
 	defer db.Close()
 
-	s := NewTaskRepository(db)
+	repo := NewTaskRepository(db)
 
 	createdAt := time.Now()
 
 	// Create Test Table
 	tests := []struct {
 		name    string
-		s       repository.TaskRepository
+		repo    repository.TaskRepository
 		mock    func()
 		want    []domain.Task
 		wantErr bool
 	}{
 		{
 			name: "OK",
-			s:    s,
+			repo: repo,
 			mock: func() {
 				rows := sqlmock.NewRows([]string{"id", "title", "user_id", "created_at"}).
 					AddRow(1, "test1", 1, createdAt).
@@ -120,7 +120,7 @@ func TestTaskRepository_GetAll(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.mock()
-			got, err := tt.s.GetAll()
+			got, err := tt.repo.GetAll()
 			if err != nil && !tt.wantErr {
 				t.Errorf("Get() error new = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -136,18 +136,18 @@ func TestTaskRepository_GetById(t *testing.T) {
 	// Init DB and Repo
 	db, mock, err := sqlmock.Newx()
 	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+		t.Fatalf("an error '%repo' was not expected when opening a stub database connection", err)
 	}
 	defer db.Close()
 
-	s := NewTaskRepository(db)
+	repo := NewTaskRepository(db)
 
 	createdAt := time.Now()
 
 	// Create Test Table
 	tests := []struct {
 		name    string
-		s       repository.TaskRepository
+		repo    repository.TaskRepository
 		mock    func()
 		id      int
 		want    domain.Task
@@ -155,7 +155,7 @@ func TestTaskRepository_GetById(t *testing.T) {
 	}{
 		{
 			name: "OK",
-			s:    s,
+			repo: repo,
 			mock: func() {
 				rows := sqlmock.NewRows([]string{"id", "title", "user_id", "created_at"}).
 					AddRow(1, "test1", 1, createdAt)
@@ -171,13 +171,13 @@ func TestTaskRepository_GetById(t *testing.T) {
 		},
 		{
 			name: "Not Found",
-			s:    s,
+			repo: repo,
 			mock: func() {
 				rows := sqlmock.NewRows([]string{"id", "title", "user_id", "created_at"})
 				mock.ExpectQuery("SELECT (.+) FROM tasks WHERE id=?").WithArgs(404).WillReturnRows(rows)
 			},
-			id: 404,
-			want: domain.Task{},
+			id:      404,
+			want:    domain.Task{},
 			wantErr: true,
 		},
 	}
@@ -186,7 +186,7 @@ func TestTaskRepository_GetById(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.mock()
-			got, err := tt.s.GetById(tt.id)
+			got, err := tt.repo.GetById(tt.id)
 			if err != nil && !tt.wantErr {
 				t.Errorf("Get() error new = %v, wantErr %v", err, tt.wantErr)
 				return

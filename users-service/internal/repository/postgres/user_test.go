@@ -13,16 +13,16 @@ func TestUserRepository_Insert(t *testing.T) {
 	// Init DB and Repo
 	db, mock, err := sqlmock.Newx()
 	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+		t.Fatalf("an error '%repo' was not expected when opening a stub database connection", err)
 	}
 	defer db.Close()
 
-	s := NewUserRepository(db)
+	repo := NewUserRepository(db)
 
 	// Create Test Table
 	tests := []struct {
 		name    string
-		s       repository.UserRepository
+		repo    repository.UserRepository
 		user    domain.User
 		mock    func()
 		want    int
@@ -30,7 +30,7 @@ func TestUserRepository_Insert(t *testing.T) {
 	}{
 		{
 			name: "OK",
-			s:    s,
+			repo: repo,
 			user: domain.User{
 				FirstName: "first_name",
 				LastName:  "last_name",
@@ -45,7 +45,7 @@ func TestUserRepository_Insert(t *testing.T) {
 		},
 		{
 			name: "Empty Fields",
-			s:    s,
+			repo: repo,
 			user: domain.User{
 				FirstName: "",
 				LastName:  "",
@@ -64,7 +64,7 @@ func TestUserRepository_Insert(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.mock()
-			got, err := tt.s.Insert(tt.user)
+			got, err := tt.repo.Insert(tt.user)
 			if err != nil && !tt.wantErr {
 				t.Errorf("Get() error new = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -81,7 +81,7 @@ func TestUserRepository_Get(t *testing.T) {
 	// Init DB and Repo
 	db, mock, err := sqlmock.Newx()
 	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+		t.Fatalf("an error '%repo' was not expected when opening a stub database connection", err)
 	}
 	defer db.Close()
 
@@ -148,16 +148,16 @@ func TestUserRepository_GetById(t *testing.T) {
 	// Init DB and Repo
 	db, mock, err := sqlmock.Newx()
 	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+		t.Fatalf("an error '%repo' was not expected when opening a stub database connection", err)
 	}
 	defer db.Close()
 
-	s := NewUserRepository(db)
+	repo := NewUserRepository(db)
 
 	// Create Test Table
 	tests := []struct {
 		name    string
-		s       repository.UserRepository
+		repo    repository.UserRepository
 		id      int
 		mock    func()
 		want    domain.User
@@ -165,7 +165,7 @@ func TestUserRepository_GetById(t *testing.T) {
 	}{
 		{
 			name: "Ok",
-			s:    s,
+			repo: repo,
 			id:   1,
 			mock: func() {
 				rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "username"}).AddRow(1, "test name", "test last name", "test")
@@ -180,7 +180,7 @@ func TestUserRepository_GetById(t *testing.T) {
 		},
 		{
 			name: "Not Found",
-			s:    s,
+			repo: repo,
 			id:   404,
 			mock: func() {
 				mock.ExpectQuery("SELECT (.+) FROM users WHERE id=?").WithArgs(1).WillReturnError(sql.ErrNoRows)
@@ -193,7 +193,7 @@ func TestUserRepository_GetById(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.mock()
-			got, err := tt.s.GetById(tt.id)
+			got, err := tt.repo.GetById(tt.id)
 			if err != nil && !tt.wantErr {
 				t.Errorf("Get() error new = %v, wantErr %v", err, tt.wantErr)
 				return
