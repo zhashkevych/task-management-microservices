@@ -48,7 +48,7 @@ func TestTaskRepository_Insert(t *testing.T) {
 			task: domain.Task{},
 			mock: func() {
 				rows := sqlmock.NewRows([]string{"id"})
-				mock.ExpectQuery("INSERT INTO users").WithArgs("", 0).WillReturnRows(rows)
+				mock.ExpectQuery("INSERT INTO tasks").WithArgs("", 0).WillReturnRows(rows)
 			},
 			wantErr: true,
 		},
